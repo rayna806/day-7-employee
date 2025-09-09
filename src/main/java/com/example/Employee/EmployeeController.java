@@ -12,7 +12,7 @@ public class EmployeeController {
     private List<Employee> employees = new ArrayList<>();
     private int id = 0;
 
-    public void clear(){
+    public void clear() {
         employees.clear();
     }
 
@@ -28,8 +28,8 @@ public class EmployeeController {
 
     @GetMapping("{id}")
     public Employee get(@PathVariable int id) {
-        for(Employee e: employees){
-            if(e.id().equals(id)){
+        for (Employee e : employees) {
+            if (e.id().equals(id)) {
                 return e;
             }
         }
@@ -38,13 +38,29 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> index(@RequestParam(required = false) String gender){
+    public List<Employee> index(@RequestParam(required = false) String gender) {
         List<Employee> result = new ArrayList<>();
-        for(Employee e: employees){
-            if(e.gender().compareToIgnoreCase(gender)==0){
+        if (gender == null) {
+            return employees;
+        }
+        for (Employee e : employees) {
+            if (e.gender().equals(gender)) {
                 result.add(e);
             }
         }
         return result;
     }
+
+    @PutMapping("{id}")
+    public Employee update(@PathVariable int id, @RequestBody Employee employee) {
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).id().equals(id)) {
+                Employee updatedEmployee = new Employee(id, employee.name(), employee.age(), employee.gender(), employee.salary());
+                employees.set(i, updatedEmployee);
+                return updatedEmployee;
+            }
+        }
+        return null;
+    }
 }
+

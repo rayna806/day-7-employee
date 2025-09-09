@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 
@@ -23,7 +22,10 @@ public class EmployeeControllerTest {
     @Autowired
     private EmployeeController controller;
 
-
+    @BeforeEach
+    public void setup() {
+        controller.clear();
+    }
 
     @Test
     void should_return_created_employee_when_post() throws Exception {
@@ -80,9 +82,45 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$[0].salary").value(expect.salary()));
     }
 
-
-    @BeforeEach
-    public void setup() {
-        controller.clear();
+    @Test
+    void should_return_employee_list_when_get() throws Exception {
+        Employee expect1 = controller.create(new Employee(null, "John Smith", 32, "Male", 5000.0));
+        Employee expect2 = controller.create(new Employee(null, "Lily", 32, "Male", 5000.0));
+        MockHttpServletRequestBuilder request = get("/employees")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
     }
+
+    @Test
+    void should_update_employee_age_and_salary_when_put_employee_with_id_exists() throws Exception {
+        Employee expect = controller.create(new Employee(null, "Tommy", 20, "Male", 6000.0));
+        controller.create(new Employee(null, "Tommy", 18, "Male", 5000.0));
+        //controller.update(new Employee(null, "Tommy", 20, "Male", 6000.0));
+        String requestBody= """
+                {
+                    "name": "Tommy",
+                    "age": 28,
+                    "gender": "Male",
+                    "salary": 8000.0
+                }
+               """;
+
+        MockHttpServletRequestBuilder request = put("/employees/"+expect.id())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody);
+
+        mockMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(expect.id()))
+                .andExpect(jsonPath("$.name").value("Tommy"))
+                .andExpect(jsonPath("$.age").value(28))
+                .andExpect(jsonPath("$.gender").value("Male"))
+                .andExpect(jsonPath("$.salary").value(8000.0));
+    }
+
+    @Test
+    void should_return_204_
+
+
+
 }
