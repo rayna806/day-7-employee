@@ -119,8 +119,11 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void should_return_204_
-
-
+    void should_return_204_when_delete_employee_with_id_exists() throws Exception {
+        Employee expect = controller.create(new Employee(null, "Tommy", 20, "Male", 6000.0));
+        MockHttpServletRequestBuilder request = delete("/employees/"+expect.id())
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request).andExpect(status().isNoContent());
+    }
 
 }
