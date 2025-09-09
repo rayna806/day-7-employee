@@ -20,4 +20,15 @@ public class EmployeeController {
         return newEmployee;
 
     }
+
+    @GetMapping("{id}")
+    public Employee get(@PathVariable int id) {
+        for(Employee e: employees){
+            if(e.id().equals(id)){
+                return e;
+            }
+        }
+        return null;
+        //return employees.stream().filter(employee -> employee.id() == id).findFirst().orElse(null);
+    }
 }
