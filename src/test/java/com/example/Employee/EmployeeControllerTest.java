@@ -60,6 +60,5 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.age").value(expect.age()))
                 .andExpect(jsonPath("$.gender").value(expect.gender()))
                 .andExpect(jsonPath("$.salary").value(expect.salary()));
-
     }
 }
