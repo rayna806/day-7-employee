@@ -1,5 +1,6 @@
 package com.example.Employee;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -48,7 +49,7 @@ public class EmployeeControllerTest {
     }
 
     @Test
-    void should_return_wmployee_when_get_employee_with_id_exsits() throws Exception {
+    void should_return_employee_when_get_employee_with_id_exsits() throws Exception {
         Employee employee = new Employee(null, "John Smith", 32, "Male", 5000.0);
         Employee expect = controller.create(employee);
         MockHttpServletRequestBuilder request = get("/employees/"+expect.id())
@@ -60,5 +61,28 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.age").value(expect.age()))
                 .andExpect(jsonPath("$.gender").value(expect.gender()))
                 .andExpect(jsonPath("$.salary").value(expect.salary()));
+    }
+
+    @Test
+    void should_return_males_when_list_by_male() throws Exception {
+
+        Employee expect = controller.create(new Employee(null, "John Smith", 32, "Male", 5000.0));
+        controller.create(new Employee(null, "Lily", 22, "Female", 5000.0));
+        MockHttpServletRequestBuilder request = get("/employees?gender=male")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(expect.id()))
+                .andExpect(jsonPath("$[0].name").value(expect.name()))
+                .andExpect(jsonPath("$[0].age").value(expect.age()))
+                .andExpect(jsonPath("$[0].gender").value(expect.gender()))
+                .andExpect(jsonPath("$[0].salary").value(expect.salary()));
+    }
+
+
+    @BeforeEach
+    public void setup() {
+        controller.clear();
     }
 }

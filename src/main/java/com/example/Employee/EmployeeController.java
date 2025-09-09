@@ -11,6 +11,11 @@ import java.util.List;
 public class EmployeeController {
     private List<Employee> employees = new ArrayList<>();
     private int id = 0;
+
+    public void clear(){
+        employees.clear();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Employee create(@RequestBody Employee employee) {
@@ -30,5 +35,16 @@ public class EmployeeController {
         }
         return null;
         //return employees.stream().filter(employee -> employee.id() == id).findFirst().orElse(null);
+    }
+
+    @GetMapping
+    public List<Employee> index(@RequestParam(required = false) String gender){
+        List<Employee> result = new ArrayList<>();
+        for(Employee e: employees){
+            if(e.gender().compareToIgnoreCase(gender)==0){
+                result.add(e);
+            }
+        }
+        return result;
     }
 }
