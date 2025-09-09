@@ -38,16 +38,32 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> index(@RequestParam(required = false) String gender) {
+    public List<Employee> index(@RequestParam(required = false) String gender,
+                               @RequestParam(required = false) Integer page,
+                               @RequestParam(required = false) Integer size) {
         List<Employee> result = new ArrayList<>();
-        if (gender == null) {
-            return employees;
-        }
-        for (Employee e : employees) {
-            if (e.gender().equals(gender)) {
-                result.add(e);
+
+        if (gender == null || gender.isEmpty()) {
+            result = new ArrayList<>(employees);
+        } else {
+            for (Employee e : employees) {
+                if (e.gender().equals(gender)) {
+                    result.add(e);
+                }
             }
         }
+
+        if (page != null && size != null && page > 0 && size > 0) {
+            int startIndex = (page - 1) * size;
+            int endIndex = Math.min(startIndex + size, result.size());
+
+            if (startIndex >= result.size()) {
+                return new ArrayList<>();
+            }
+
+            return result.subList(startIndex, endIndex);
+        }
+
         return result;
     }
 
@@ -70,4 +86,3 @@ public class EmployeeController {
 
     }
 }
-

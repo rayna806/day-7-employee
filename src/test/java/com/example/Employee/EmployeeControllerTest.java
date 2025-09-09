@@ -126,4 +126,19 @@ public class EmployeeControllerTest {
         mockMvc.perform(request).andExpect(status().isNoContent());
     }
 
+    @Test
+    void should_return_page_employees_when_get_with_page_and_size() throws Exception {
+        for (int i = 1; i <= 10; i++) {
+            controller.create(new Employee(null, "Employee" + i, 20 + i, "Male", 5000.0 + i * 100));
+        }
+
+        MockHttpServletRequestBuilder request = get("/employees?page=1&size=5")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].name").value("Employee1"))
+                .andExpect(jsonPath("$[4].name").value("Employee5"));
+    }
+
 }
